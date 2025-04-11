@@ -7,17 +7,35 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.ConcurrentHashMap;
 // edit: fileOutputStrategy -> FileOutputStrategy   :   class names should be formatted in UpperCamelCase
+/**
+ * An implementation of {@link OutputStrategy} that writes patient data to text files.
+ * Each data label is written to a separate file within the specified base directory.
+ */
 public class FileOutputStrategy implements OutputStrategy {
     // edit: BaseDirectory -> baseDirectory  :  variable names should be formatted in lowerCamelCase
     private String baseDirectory;
     // edit: file_map -> fileMap  :  variable names should be formatted in lowerCamelCase
     public final ConcurrentHashMap<String, String> fileMap = new ConcurrentHashMap<>();
 
+    /**
+     * Constructs a new FileOutputStrategy with the given base directory.
+     *
+     * @param baseDirectory The directory where output files will be created.
+     */
     public FileOutputStrategy(String baseDirectory) {
 
         this.baseDirectory = baseDirectory;
     }
 
+    /**
+     * Outputs the data for a specific patient by writing it to a file with a data label.
+     * Creates the base directory and file if they do not exist.
+     *
+     * @param patientId The ID of the patient.
+     * @param timestamp The timestamp of the data.
+     * @param label     The label describing the data type.
+     * @param data      The data value to be written.
+     */
     @Override
     public void output(int patientId, long timestamp, String label, String data) {
         try {

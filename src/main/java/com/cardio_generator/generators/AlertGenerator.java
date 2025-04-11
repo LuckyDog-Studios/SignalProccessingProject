@@ -4,16 +4,32 @@ import java.util.Random;
 
 import com.cardio_generator.outputs.OutputStrategy;
 
+/**
+ * Generates simulated alert data for patients, representing triggered or resolved alerts.
+ * Alerts are generated based on a Poisson distribution to simulate random occurrences.
+ */
 public class AlertGenerator implements PatientDataGenerator {
 
     public static final Random randomGenerator = new Random();
     // edit: AlertStates -> alertStates for lowerCamelCase
     private boolean[] alertStates; // false = resolved, true = pressed
 
+    /**
+     * Constructs a new {@code AlertGenerator} for the specified number of patients.
+     *
+     * @param patientCount The number of patients to simulate.
+     */
     public AlertGenerator(int patientCount) {
         alertStates = new boolean[patientCount + 1];
     }
 
+    /**
+     * Generates an alert event for the specified patient based on current alert state.
+     * May either trigger or resolve an alert and sends the result via the output strategy.
+     *
+     * @param patientId The ID of the patient.
+     * @param outputStrategy The strategy used to output the generated alert data.
+     */
     @Override
     public void generate(int patientId, OutputStrategy outputStrategy) {
         try {
