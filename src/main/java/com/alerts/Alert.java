@@ -23,4 +23,13 @@ public class Alert {
     public long getTimestamp() {
         return timestamp;
     }
+
+    @Override
+    public String toString() {
+        return "Alert{" +
+                "patientId='" + patientId + '\'' +
+                ", condition='" + condition + '\'' +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }
