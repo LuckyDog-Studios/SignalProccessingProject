@@ -15,6 +15,9 @@ import java.util.*;
 public class AlertGenerator {
     private DataStorage dataStorage;
 
+    private final AlertFactory bpAlertFactory = new BloodPressureAlertFactory();
+    private final AlertFactory oxygenAlertFactory = new BloodOxygenAlertFactory();
+    private final AlertFactory ecgAlertFactory = new ECGAlertFactory();
     /**
      * Constructs an {@code AlertGenerator} with a specified {@code DataStorage}.
      * The {@code DataStorage} is used to retrieve patient data that this class
@@ -69,6 +72,7 @@ public class AlertGenerator {
 
         checkECGPeaks(records, patient.getId());
     }
+
     // checks for a rising or falling blood pressure trend over three readings
     private void checkBloodPressureTrends(List<PatientRecord> records, int patientId, String label) {
         if (records.size() < 3) return;
@@ -84,9 +88,19 @@ public class AlertGenerator {
             boolean down = v1 - v2 > 10 && v2 - v3 > 10;
 
             if (up) {
-                triggerAlert(new Alert(String.valueOf(patientId), label + " BP rising trend", records.get(i + 2).getTimestamp()));
+                Alert alert = bpAlertFactory.createAlert(
+                        String.valueOf(patientId),
+                        label + " BP rising trend",
+                        records.get(i + 2).getTimestamp()
+                );
+                triggerAlert(alert);
             } else if (down) {
-                triggerAlert(new Alert(String.valueOf(patientId), label + " BP falling trend", records.get(i + 2).getTimestamp()));
+                Alert alert = bpAlertFactory.createAlert(
+                        String.valueOf(patientId),
+                        label + " BP falling trend",
+                        records.get(i + 2).getTimestamp()
+                );
+                triggerAlert(alert);
             }
         }
     }
@@ -99,7 +113,12 @@ public class AlertGenerator {
         double value = latest.getMeasurementValue();
 
         if (value < min || value > max) {
-            triggerAlert(new Alert(String.valueOf(patientId), label + " BP critical", latest.getTimestamp()));
+            Alert alert = bpAlertFactory.createAlert(
+                    String.valueOf(patientId),
+                    label + " BP critical",
+                    latest.getTimestamp()
+            );
+            triggerAlert(alert);
         }
     }
 
@@ -111,7 +130,12 @@ public class AlertGenerator {
         PatientRecord latest = records.get(records.size() - 1);
 
         if (latest.getMeasurementValue() < 92) {
-            triggerAlert(new Alert(String.valueOf(patientId), "Low oxygen saturation", latest.getTimestamp()));
+            Alert alert = oxygenAlertFactory.createAlert(
+                    String.valueOf(patientId),
+                    "Low oxygen saturation",
+                    latest.getTimestamp()
+            );
+            triggerAlert(alert);
         }
 
         for (int i = records.size() - 2; i >= 0; i--) {
@@ -121,7 +145,12 @@ public class AlertGenerator {
             if (timeDiff > 600_000) break;
 
             if (previous.getMeasurementValue() - latest.getMeasurementValue() >= 5) {
-                triggerAlert(new Alert(String.valueOf(patientId), "Rapid drop in oxygen saturation", latest.getTimestamp()));
+                Alert alert = oxygenAlertFactory.createAlert(
+                        String.valueOf(patientId),
+                        "Rapid drop in oxygen saturation",
+                        latest.getTimestamp()
+                );
+                triggerAlert(alert);
                 break;
             }
         }
@@ -135,18 +164,30 @@ public class AlertGenerator {
         PatientRecord latestSat = Collections.max(saturation, Comparator.comparingLong(PatientRecord::getTimestamp));
 
         if (latestSys.getMeasurementValue() < 90 && latestSat.getMeasurementValue() < 92) {
-            triggerAlert(new Alert(String.valueOf(patientId), "Hypotensive Hypoxemia Alert", Math.max(latestSys.getTimestamp(), latestSat.getTimestamp())));
+            // You may want a separate factory for combined alerts; using bpAlertFactory here for simplicity
+            Alert alert = bpAlertFactory.createAlert(
+                    String.valueOf(patientId),
+                    "Hypotensive Hypoxemia Alert",
+                    Math.max(latestSys.getTimestamp(), latestSat.getTimestamp())
+            );
+            triggerAlert(alert);
         }
     }
 
     // there's no HealthDataGenerator class, so I just put a method here that handles manual triggered alert
     public void handleTriggeredAlert(int patientId, long timestamp) {
-        triggerAlert(new Alert(String.valueOf(patientId), "Manual Triggered Alert", timestamp));
+        Alert alert = new Alert(
+                String.valueOf(patientId),
+                "Manual Triggered Alert",
+                timestamp,
+                "Manual"
+        );
+        triggerAlert(alert);
     }
 
     // checks ECG readings for abnormal peaks using a simple window average
     private void checkECGPeaks(List<PatientRecord> ecgRecords, int patientId) {
-        if (ecgRecords.size() < 5) return; // not enough data
+        if (ecgRecords.size() < 5) return;
 
         ecgRecords.sort(Comparator.comparingLong(PatientRecord::getTimestamp));
         int windowSize = 5;
@@ -160,15 +201,15 @@ public class AlertGenerator {
             double current = ecgRecords.get(i).getMeasurementValue();
 
             if (current > avg * 1.5) {
-                triggerAlert(new Alert(
+                Alert alert = ecgAlertFactory.createAlert(
                         String.valueOf(patientId),
                         "Abnormal ECG peak detected",
                         ecgRecords.get(i).getTimestamp()
-                ));
+                );
+                triggerAlert(alert);
             }
         }
     }
-
 
 
     /**
