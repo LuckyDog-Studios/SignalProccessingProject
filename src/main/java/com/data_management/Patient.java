@@ -41,6 +41,17 @@ public class Patient {
     }
 
     /**
+     * Adds a new record to this patient's list of medical records.
+     * The record is created with the specified measurement value, record type, and
+     * timestamp.
+     *
+     * @param record    record with all relevant information.
+     */
+    public void addRecord(PatientRecord record) {
+        this.patientRecords.add(record);
+    }
+
+    /**
      * Retrieves a list of PatientRecord objects for this patient that fall within a
      * specified time range.
      * The method filters records based on the start and end times provided.

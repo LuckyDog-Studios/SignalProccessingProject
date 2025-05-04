@@ -1,4 +1,6 @@
-package com.alerts;
+package com.alerts.Factory;
+
+import com.alerts.Alert;
 
 // Comment: used alert factory as abstract class instead of implementing alert factory logic here
 public abstract class AlertFactory {
