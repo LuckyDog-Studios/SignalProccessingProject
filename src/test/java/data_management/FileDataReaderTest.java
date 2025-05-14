@@ -20,7 +20,7 @@ public class FileDataReaderTest {
         DataReader reader = new FileDataReader("src/test/resources");
         reader.readData(storage);
 
-        List<PatientRecord> records = storage.getRecords(1, 0, System.currentTimeMillis());
+        List<PatientRecord> records = storage.getRecords(7, 0, System.currentTimeMillis());
         assertFalse(records.isEmpty());
     }
 

@@ -5,7 +5,7 @@ import java.util.Random;
 import com.cardio_generator.outputs.OutputStrategy;
 
 public class BloodLevelsDataGenerator implements PatientDataGenerator {
-    private static final Random random = new Random();
+    private static final Random random = new Random(System.currentTimeMillis()); // Added seed
     private final double[] baselineCholesterol;
     private final double[] baselineWhiteCells;
     private final double[] baselineRedCells;

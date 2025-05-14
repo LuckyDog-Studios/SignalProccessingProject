@@ -9,7 +9,7 @@ import com.cardio_generator.outputs.OutputStrategy;
  * Produces realistic fluctuations and maintains values within a safe range.
  */
 public class BloodSaturationDataGenerator implements PatientDataGenerator {
-    private static final Random random = new Random();
+    private static final Random random = new Random(System.currentTimeMillis()); // Added seed
     private int[] lastSaturationValues;
 
     /**

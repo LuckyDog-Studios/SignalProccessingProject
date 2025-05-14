@@ -10,7 +10,7 @@ import com.cardio_generator.outputs.OutputStrategy;
  */
 public class AlertGenerator implements PatientDataGenerator {
 
-    public static final Random randomGenerator = new Random();
+    public static final Random randomGenerator = new Random(System.currentTimeMillis()); // Added seed
     // edit: AlertStates -> alertStates for lowerCamelCase
     private boolean[] alertStates; // false = resolved, true = pressed
 

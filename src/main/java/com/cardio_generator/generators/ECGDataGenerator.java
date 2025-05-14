@@ -5,7 +5,7 @@ import java.util.Random;
 import com.cardio_generator.outputs.OutputStrategy;
 
 public class ECGDataGenerator implements PatientDataGenerator {
-    private static final Random random = new Random();
+    private static final Random random = new Random(System.currentTimeMillis()); // Added seed
     private double[] lastEcgValues;
     private static final double PI = Math.PI;
 

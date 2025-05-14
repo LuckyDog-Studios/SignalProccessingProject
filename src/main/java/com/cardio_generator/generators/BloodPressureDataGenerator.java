@@ -5,7 +5,7 @@ import java.util.Random;
 import com.cardio_generator.outputs.OutputStrategy;
 
 public class BloodPressureDataGenerator implements PatientDataGenerator {
-    private static final Random random = new Random();
+    private static final Random random = new Random(System.currentTimeMillis()); // Added seed
 
     private int[] lastSystolicValues;
     private int[] lastDiastolicValues;
